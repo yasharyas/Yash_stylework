@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { statusUpdateSchema } from "@/lib/validation";
+import type { Lead } from "@/lib/database.types";
 
 export async function PATCH(
   request: NextRequest,
@@ -23,10 +24,12 @@ export async function PATCH(
     );
   }
 
-  const { data, error } = await supabase.rpc("update_lead_status", {
-    p_lead_id: id,
-    p_new_status: parsed.data.status,
-  });
+  const { data, error } = await supabase
+    .rpc("update_lead_status", {
+      p_lead_id: id,
+      p_new_status: parsed.data.status,
+    })
+    .returns<Lead>();
 
   if (error) {
     console.error("PATCH /api/leads/[id]/status failed", error);

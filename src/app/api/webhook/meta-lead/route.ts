@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { metaLeadWebhookSchema } from "@/lib/validation";
+import type { Lead } from "@/lib/database.types";
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -18,9 +19,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { data, error } = await supabase.rpc("create_lead_from_webhook", {
-    payload: parsed.data,
-  });
+  const { data, error } = await supabase
+    .rpc("create_lead_from_webhook", { payload: parsed.data })
+    .returns<Lead>();
 
   if (error) {
     console.error("create_lead_from_webhook failed", error);
