@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Activity, Lead, LeadStatus, LEAD_STATUSES } from "@/lib/database.types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
+import { apiFetch } from "@/lib/api-client";
 
 export function LeadDetail({ leadId }: { leadId: string }) {
   const [lead, setLead] = useState<Lead | null>(null);
@@ -16,9 +17,9 @@ export function LeadDetail({ leadId }: { leadId: string }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/leads/${leadId}`);
-      if (!res.ok) throw new Error("Lead not found");
-      const json = await res.json();
+      const json = await apiFetch<{ lead: Lead; activities: Activity[] }>(
+        `/api/leads/${leadId}`
+      );
       setLead(json.lead);
       setActivities(json.activities ?? []);
     } catch (err) {
@@ -37,12 +38,11 @@ export function LeadDetail({ leadId }: { leadId: string }) {
     setUpdating(true);
     setError(null);
     try {
-      const res = await fetch(`/api/leads/${leadId}/status`, {
+      await apiFetch(`/api/leads/${leadId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
-      if (!res.ok) throw new Error("Failed to update status");
       await fetchLead();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

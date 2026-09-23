@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Lead, LeadStatus, LEAD_STATUSES } from "@/lib/database.types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { LeadListSkeleton } from "@/components/LeadListSkeleton";
+import { apiFetch } from "@/lib/api-client";
 
 export function LeadList() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -21,9 +22,9 @@ export function LeadList() {
       if (statusFilter !== "all") params.set("status", statusFilter);
       if (search.trim()) params.set("q", search.trim());
 
-      const res = await fetch(`/api/leads?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to load leads");
-      const json = await res.json();
+      const json = await apiFetch<{ leads: Lead[] }>(
+        `/api/leads?${params.toString()}`
+      );
       setLeads(json.leads ?? []);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
