@@ -3,7 +3,7 @@
 A small service that receives leads from a Meta Ads webhook, stores them, keeps an audit
 trail of what happened to each one, and lets you review and update them from a web UI.
 
-**Live app:** _added after deploy_
+**Live app:** https://yash-stylework.vercel.app
 **Repo:** https://github.com/yasharyas/Yash_stylework
 
 ## Architecture
