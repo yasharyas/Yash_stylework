@@ -66,57 +66,69 @@ export function LeadList() {
       {loading ? (
         <LeadListSkeleton />
       ) : leads.length === 0 ? (
-        <p className="text-sm text-gray-500">No leads found.</p>
-      ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
-                  Name
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
-                  Contact
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
-                  Campaign
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
-                  Status
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
-                  Created
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 bg-white">
-              {leads.map((lead) => (
-                <tr key={lead.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm">
-                    <Link
-                      href={`/leads/${lead.id}`}
-                      className="font-medium text-blue-600 hover:underline"
-                    >
-                      {lead.full_name}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {lead.email ?? lead.phone ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {lead.campaign_name ?? "—"}
-                  </td>
-                  <td className="px-4 py-3 text-sm">
-                    <StatusBadge status={lead.status} />
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-500">
-                    {new Date(lead.created_at).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="rounded-lg border border-dashed border-gray-300 bg-white px-4 py-12 text-center">
+          <p className="text-sm font-medium text-gray-900">No leads found</p>
+          <p className="mt-1 text-sm text-gray-500">
+            {search || statusFilter !== "all"
+              ? "Try a different search term or status filter."
+              : "New leads from the Meta Ads webhook will show up here."}
+          </p>
         </div>
+      ) : (
+        <>
+          <p className="mb-2 text-xs text-gray-500">
+            {leads.length} lead{leads.length === 1 ? "" : "s"}
+          </p>
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
+                    Name
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
+                    Contact
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
+                    Campaign
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
+                    Status
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500">
+                    Created
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 bg-white">
+                {leads.map((lead) => (
+                  <tr key={lead.id} className="relative hover:bg-gray-50">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                      <Link
+                        href={`/leads/${lead.id}`}
+                        className="after:absolute after:inset-0 hover:text-blue-600"
+                      >
+                        {lead.full_name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {lead.email ?? lead.phone ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {lead.campaign_name ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-sm">
+                      <StatusBadge status={lead.status} />
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-500">
+                      {new Date(lead.created_at).toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );
