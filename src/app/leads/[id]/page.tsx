@@ -32,8 +32,11 @@ export default async function LeadPage({
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10">
-      <Link href="/" className="mb-6 inline-block text-sm text-blue-600 hover:underline">
-        ← Back to all leads
+      <Link
+        href="/"
+        className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
+      >
+        <span aria-hidden>←</span> Back to all leads
       </Link>
       <LeadDetail leadId={id} />
     </main>

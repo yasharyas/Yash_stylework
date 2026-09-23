@@ -51,7 +51,7 @@ export function LeadDetail({ leadId }: { leadId: string }) {
     }
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading...</p>;
+  if (loading) return <LeadDetailSkeleton />;
   if (error && !lead) return <p className="text-sm text-red-600">{error}</p>;
   if (!lead) return null;
 
@@ -70,7 +70,7 @@ export function LeadDetail({ leadId }: { leadId: string }) {
           <StatusBadge status={lead.status} />
         </div>
 
-        <dl className="mb-8 grid grid-cols-2 gap-4 rounded-lg border border-gray-200 p-4 text-sm">
+        <dl className="mb-8 grid grid-cols-2 gap-4 rounded-lg border border-gray-200 bg-white p-4 text-sm shadow-sm">
           <div>
             <dt className="text-gray-500">Campaign</dt>
             <dd className="font-medium text-gray-900">
@@ -93,22 +93,31 @@ export function LeadDetail({ leadId }: { leadId: string }) {
           </div>
         </dl>
 
-        <div className="mb-8">
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+        <div className="mb-8 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+          <label
+            htmlFor="lead-status"
+            className="mb-1 block text-sm font-medium text-gray-700"
+          >
             Update status
           </label>
-          <select
-            value={lead.status}
-            disabled={updating}
-            onChange={(e) => handleStatusChange(e.target.value as LeadStatus)}
-            className="rounded-md border border-gray-300 px-3 py-2 text-sm disabled:opacity-50"
-          >
-            {LEAD_STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-3">
+            <select
+              id="lead-status"
+              value={lead.status}
+              disabled={updating}
+              onChange={(e) => handleStatusChange(e.target.value as LeadStatus)}
+              className="rounded-md border border-gray-300 px-3 py-2 text-sm capitalize disabled:opacity-50"
+            >
+              {LEAD_STATUSES.map((s) => (
+                <option key={s} value={s} className="capitalize">
+                  {s}
+                </option>
+              ))}
+            </select>
+            {updating && (
+              <span className="text-xs text-gray-500">Saving…</span>
+            )}
+          </div>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>
       </div>
@@ -119,6 +128,19 @@ export function LeadDetail({ leadId }: { leadId: string }) {
         </h2>
         <ActivityTimeline activities={activities} />
       </div>
+    </div>
+  );
+}
+
+function LeadDetailSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-3 animate-pulse">
+      <div className="md:col-span-2">
+        <div className="mb-6 h-7 w-48 rounded bg-gray-200" />
+        <div className="mb-8 h-28 rounded-lg border border-gray-200 bg-gray-50" />
+        <div className="h-20 rounded-lg border border-gray-200 bg-gray-50" />
+      </div>
+      <div className="h-40 rounded-lg bg-gray-50" />
     </div>
   );
 }
