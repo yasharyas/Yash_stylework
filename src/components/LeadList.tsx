@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Lead, LeadStatus, LEAD_STATUSES } from "@/lib/database.types";
 import { StatusBadge } from "@/components/StatusBadge";
+import { LeadListSkeleton } from "@/components/LeadListSkeleton";
 
 export function LeadList() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -62,7 +63,7 @@ export function LeadList() {
       {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
       {loading ? (
-        <p className="text-sm text-gray-500">Loading leads...</p>
+        <LeadListSkeleton />
       ) : leads.length === 0 ? (
         <p className="text-sm text-gray-500">No leads found.</p>
       ) : (
