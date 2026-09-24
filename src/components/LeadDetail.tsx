@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Activity, Lead, LeadStatus, LEAD_STATUSES } from "@/lib/database.types";
+import { Activity, Lead, LeadStatus } from "@/lib/database.types";
 import { StatusBadge } from "@/components/StatusBadge";
+import { StatusSelect } from "@/components/StatusSelect";
 import { Avatar } from "@/components/Avatar";
+import { CopyableText } from "@/components/CopyableText";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
+import { Toast } from "@/components/Toast";
 import { apiFetch } from "@/lib/api-client";
+import { relativeTime } from "@/lib/relative-time";
 
 function InfoField({ label, value }: { label: string; value: string }) {
   return (
@@ -24,6 +28,7 @@ export function LeadDetail({ leadId }: { leadId: string }) {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; tone: "success" | "error" } | null>(null);
 
   const fetchLead = useCallback(async () => {
     setLoading(true);
@@ -45,6 +50,12 @@ export function LeadDetail({ leadId }: { leadId: string }) {
     fetchLead();
   }, [fetchLead]);
 
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 2200);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
   async function handleStatusChange(newStatus: LeadStatus) {
     if (!lead || newStatus === lead.status) return;
     setUpdating(true);
@@ -56,8 +67,11 @@ export function LeadDetail({ leadId }: { leadId: string }) {
         body: JSON.stringify({ status: newStatus }),
       });
       await fetchLead();
+      setToast({ message: `Status changed to ${newStatus}`, tone: "success" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      const message = err instanceof Error ? err.message : "Something went wrong";
+      setError(message);
+      setToast({ message: "Couldn't update status", tone: "error" });
     } finally {
       setUpdating(false);
     }
@@ -69,6 +83,8 @@ export function LeadDetail({ leadId }: { leadId: string }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      {toast && <Toast message={toast.message} tone={toast.tone} />}
+
       <div className="lg:col-span-2 space-y-6">
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -79,7 +95,9 @@ export function LeadDetail({ leadId }: { leadId: string }) {
                   {lead.full_name}
                 </h1>
                 <p className="text-sm text-gray-500">
-                  {lead.email ?? "No email"} · {lead.phone ?? "No phone"}
+                  {lead.email ? <CopyableText value={lead.email} /> : "No email"}
+                  {" · "}
+                  {lead.phone ? <CopyableText value={lead.phone} /> : "No phone"}
                 </p>
               </div>
             </div>
@@ -90,50 +108,20 @@ export function LeadDetail({ leadId }: { leadId: string }) {
             <InfoField label="Campaign" value={lead.campaign_name ?? "—"} />
             <InfoField label="Ad ID" value={lead.ad_id ?? "—"} />
             <InfoField label="Form ID" value={lead.form_id ?? "—"} />
-            <InfoField
-              label="Received"
-              value={new Date(lead.created_at).toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-                hour: "numeric",
-                minute: "2-digit",
-              })}
-            />
+            <InfoField label="Received" value={relativeTime(lead.created_at)} />
           </dl>
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <label
-            htmlFor="lead-status"
-            className="mb-2 block text-sm font-medium text-gray-700"
-          >
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             Update status
           </label>
           <div className="flex flex-wrap items-center gap-3">
-            <div className="relative">
-              <select
-                id="lead-status"
-                value={lead.status}
-                disabled={updating}
-                onChange={(e) => handleStatusChange(e.target.value as LeadStatus)}
-                className="appearance-none rounded-lg border border-gray-300 bg-white py-2 pl-3 pr-8 text-sm font-medium capitalize text-gray-900 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10 disabled:opacity-50"
-              >
-                {LEAD_STATUSES.map((s) => (
-                  <option key={s} value={s} className="capitalize">
-                    {s}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+            <StatusSelect
+              value={lead.status}
+              onChange={handleStatusChange}
+              disabled={updating}
+            />
             {updating && (
               <span className="flex items-center gap-1.5 text-xs text-gray-500">
                 <span className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />

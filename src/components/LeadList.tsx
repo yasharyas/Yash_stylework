@@ -5,8 +5,10 @@ import Link from "next/link";
 import { Lead, LeadStatus, LEAD_STATUSES } from "@/lib/database.types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Avatar } from "@/components/Avatar";
+import { StatCards } from "@/components/StatCards";
 import { LeadListSkeleton } from "@/components/LeadListSkeleton";
 import { apiFetch } from "@/lib/api-client";
+import { relativeTime } from "@/lib/relative-time";
 
 const FILTERS: { label: string; value: LeadStatus | "all" }[] = [
   { label: "All", value: "all" },
@@ -18,6 +20,7 @@ const FILTERS: { label: string; value: LeadStatus | "all" }[] = [
 
 export function LeadList() {
   const [leads, setLeads] = useState<Lead[]>([]);
+  const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
@@ -42,12 +45,29 @@ export function LeadList() {
     }
   }, [statusFilter, search]);
 
+  // Unfiltered snapshot for the summary cards, kept separate from the filtered
+  // table fetch so switching a filter doesn't make the totals jump around.
+  const fetchAllLeads = useCallback(async () => {
+    try {
+      const json = await apiFetch<{ leads: Lead[] }>("/api/leads");
+      setAllLeads(json.leads ?? []);
+    } catch {
+      // Non-critical: the summary cards just stay at their last known counts.
+    }
+  }, []);
+
   useEffect(() => {
     fetchLeads();
   }, [fetchLeads]);
 
+  useEffect(() => {
+    fetchAllLeads();
+  }, [fetchAllLeads, leads.length]);
+
   return (
     <div>
+      {allLeads.length > 0 && <StatCards leads={allLeads} />}
+
       <div className="mb-5 flex flex-col gap-4">
         <div className="relative w-full sm:w-96">
           <svg
@@ -155,13 +175,11 @@ export function LeadList() {
                     <td className="px-4 py-3">
                       <StatusBadge status={lead.status} />
                     </td>
-                    <td className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:table-cell">
-                      {new Date(lead.created_at).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
+                    <td
+                      className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:table-cell"
+                      title={new Date(lead.created_at).toLocaleString()}
+                    >
+                      {relativeTime(lead.created_at)}
                     </td>
                   </tr>
                 ))}
