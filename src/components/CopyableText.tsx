@@ -20,7 +20,7 @@ export function CopyableText({ value }: { value: string }) {
     <button
       type="button"
       onClick={copy}
-      className="group inline-flex items-center gap-1 rounded hover:text-gray-900"
+      className="group inline-flex items-center gap-1 rounded hover:text-gray-900 dark:hover:text-gray-100"
       title="Copy to clipboard"
     >
       {value}

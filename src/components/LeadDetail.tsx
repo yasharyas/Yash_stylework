@@ -14,10 +14,10 @@ import { relativeTime } from "@/lib/relative-time";
 function InfoField({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="text-xs font-medium uppercase tracking-wide text-gray-400">
+      <dt className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">
         {label}
       </dt>
-      <dd className="mt-0.5 text-sm font-medium text-gray-900">{value}</dd>
+      <dd className="mt-0.5 text-sm font-medium text-gray-900 dark:text-gray-100">{value}</dd>
     </div>
   );
 }
@@ -78,7 +78,7 @@ export function LeadDetail({ leadId }: { leadId: string }) {
   }
 
   if (loading) return <LeadDetailSkeleton />;
-  if (error && !lead) return <p className="text-sm text-red-600">{error}</p>;
+  if (error && !lead) return <p className="text-sm text-red-600 dark:text-red-400">{error}</p>;
   if (!lead) return null;
 
   return (
@@ -86,15 +86,15 @@ export function LeadDetail({ leadId }: { leadId: string }) {
       {toast && <Toast message={toast.message} tone={toast.tone} />}
 
       <div className="lg:col-span-2 space-y-6">
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <Avatar name={lead.full_name} />
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">
+                <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {lead.full_name}
                 </h1>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {lead.email ? <CopyableText value={lead.email} /> : "No email"}
                   {" · "}
                   {lead.phone ? <CopyableText value={lead.phone} /> : "No phone"}
@@ -104,7 +104,7 @@ export function LeadDetail({ leadId }: { leadId: string }) {
             <StatusBadge status={lead.status} />
           </div>
 
-          <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-gray-100 pt-5 sm:grid-cols-4">
+          <dl className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 border-t border-gray-100 pt-5 dark:border-gray-800 sm:grid-cols-4">
             <InfoField label="Campaign" value={lead.campaign_name ?? "—"} />
             <InfoField label="Ad ID" value={lead.ad_id ?? "—"} />
             <InfoField label="Form ID" value={lead.form_id ?? "—"} />
@@ -112,8 +112,8 @@ export function LeadDetail({ leadId }: { leadId: string }) {
           </dl>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Update status
           </label>
           <div className="flex flex-wrap items-center gap-3">
@@ -123,18 +123,18 @@ export function LeadDetail({ leadId }: { leadId: string }) {
               disabled={updating}
             />
             {updating && (
-              <span className="flex items-center gap-1.5 text-xs text-gray-500">
-                <span className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+              <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <span className="h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-700 dark:border-t-gray-300" />
                 Saving…
               </span>
             )}
           </div>
-          {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
         </div>
       </div>
 
       <div>
-        <h2 className="mb-3 text-sm font-semibold text-gray-900">
+        <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
           Activity Timeline
         </h2>
         <ActivityTimeline activities={activities} />
@@ -147,10 +147,10 @@ function LeadDetailSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 animate-pulse">
       <div className="lg:col-span-2 space-y-6">
-        <div className="h-36 rounded-xl border border-gray-200 bg-gray-50" />
-        <div className="h-24 rounded-xl border border-gray-200 bg-gray-50" />
+        <div className="h-36 rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900" />
+        <div className="h-24 rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900" />
       </div>
-      <div className="h-48 rounded-xl border border-gray-200 bg-gray-50" />
+      <div className="h-48 rounded-xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900" />
     </div>
   );
 }

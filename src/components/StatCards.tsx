@@ -19,22 +19,22 @@ export function StatCards({ leads }: { leads: Lead[] }) {
 
   return (
     <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <p className="text-xs font-medium text-gray-500">Total leads</p>
-        <p className="mt-1 text-2xl font-semibold text-gray-900">{leads.length}</p>
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Total leads</p>
+        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-gray-100">{leads.length}</p>
       </div>
       {LEAD_STATUSES.map((s) => (
-        <div key={s} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <p className="flex items-center gap-1.5 text-xs font-medium capitalize text-gray-500">
+        <div key={s} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <p className="flex items-center gap-1.5 text-xs font-medium capitalize text-gray-500 dark:text-gray-400">
             <span className={`h-1.5 w-1.5 rounded-full ${DOT[s]}`} />
             {s}
           </p>
-          <p className="mt-1 text-2xl font-semibold text-gray-900">{counts[s]}</p>
+          <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-gray-100">{counts[s]}</p>
         </div>
       ))}
-      <div className="col-span-2 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:col-span-1 lg:hidden">
-        <p className="text-xs font-medium text-gray-500">Conversion rate</p>
-        <p className="mt-1 text-2xl font-semibold text-gray-900">{conversionRate}%</p>
+      <div className="col-span-2 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-1 lg:hidden">
+        <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Conversion rate</p>
+        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-gray-100">{conversionRate}%</p>
       </div>
     </div>
   );
