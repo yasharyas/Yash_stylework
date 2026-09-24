@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,12 +14,18 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Internal ops tool: kept light-only regardless of OS theme for simplicity and
-   consistent contrast against the gray-900/gray-500 text used throughout. */
+/* Theme is toggled manually via a `dark` class on <html> (persisted in
+   localStorage) rather than following the OS preference, so switching it
+   is predictable regardless of the visitor's system setting. */
 body {
   background: #f9fafb;
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+.dark body {
+  background: #0a0a0a;
+  color: #ededed;
 }
 
 @keyframes toast-in {
