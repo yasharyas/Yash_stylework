@@ -68,9 +68,13 @@ export function LeadList() {
   return (
     <div>
       {allLeads.length > 0 && (
-        <div className="mb-6 space-y-4">
-          <StatCards leads={allLeads} />
-          <LeadsChart leads={allLeads} />
+        <div className="mb-6 flex flex-col gap-3 lg:flex-row">
+          <div className="lg:flex-1">
+            <StatCards leads={allLeads} />
+          </div>
+          <div className="lg:w-72 lg:shrink-0">
+            <LeadsChart leads={allLeads} />
+          </div>
         </div>
       )}
 

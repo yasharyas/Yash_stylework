@@ -18,7 +18,7 @@ export function StatCards({ leads }: { leads: Lead[] }) {
     leads.length === 0 ? 0 : Math.round((counts.converted / leads.length) * 100);
 
   return (
-    <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <div className="grid h-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
       <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900">
         <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Total leads</p>
         <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-gray-100">{leads.length}</p>
