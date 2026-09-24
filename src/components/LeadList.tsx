@@ -6,6 +6,7 @@ import { Lead, LeadStatus, LEAD_STATUSES } from "@/lib/database.types";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Avatar } from "@/components/Avatar";
 import { StatCards } from "@/components/StatCards";
+import { LeadsChart } from "@/components/LeadsChart";
 import { LeadListSkeleton } from "@/components/LeadListSkeleton";
 import { apiFetch } from "@/lib/api-client";
 import { relativeTime } from "@/lib/relative-time";
@@ -45,8 +46,8 @@ export function LeadList() {
     }
   }, [statusFilter, search]);
 
-  // Unfiltered snapshot for the summary cards, kept separate from the filtered
-  // table fetch so switching a filter doesn't make the totals jump around.
+  // Unfiltered snapshot for the summary cards and chart, kept separate from
+  // the filtered table fetch so switching a filter doesn't make totals jump.
   const fetchAllLeads = useCallback(async () => {
     try {
       const json = await apiFetch<{ leads: Lead[] }>("/api/leads");
@@ -66,7 +67,12 @@ export function LeadList() {
 
   return (
     <div>
-      {allLeads.length > 0 && <StatCards leads={allLeads} />}
+      {allLeads.length > 0 && (
+        <div className="mb-6 space-y-4">
+          <StatCards leads={allLeads} />
+          <LeadsChart leads={allLeads} />
+        </div>
+      )}
 
       <div className="mb-5 flex flex-col gap-4">
         <div className="relative w-full sm:w-96">
@@ -84,7 +90,7 @@ export function LeadList() {
             placeholder="Search by name, email or phone"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500 dark:focus:border-gray-600"
           />
         </div>
 
@@ -95,8 +101,8 @@ export function LeadList() {
               onClick={() => setStatusFilter(f.value)}
               className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
                 statusFilter === f.value
-                  ? "bg-gray-900 text-white"
-                  : "bg-white text-gray-600 ring-1 ring-inset ring-gray-200 hover:bg-gray-50"
+                  ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                  : "bg-white text-gray-600 ring-1 ring-inset ring-gray-200 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-300 dark:ring-gray-700 dark:hover:bg-gray-800"
               }`}
             >
               {f.label}
@@ -106,7 +112,7 @@ export function LeadList() {
       </div>
 
       {error && (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">
           {error}
         </p>
       )}
@@ -114,14 +120,14 @@ export function LeadList() {
       {loading ? (
         <LeadListSkeleton />
       ) : leads.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-16 text-center">
-          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+        <div className="rounded-xl border border-dashed border-gray-300 bg-white px-4 py-16 text-center dark:border-gray-700 dark:bg-gray-900">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-gray-800">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </div>
-          <p className="text-sm font-medium text-gray-900">No leads found</p>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">No leads found</p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             {search || statusFilter !== "all"
               ? "Try a different search term or status filter."
               : "New leads from the Meta Ads webhook will show up here."}
@@ -129,30 +135,30 @@ export function LeadList() {
         </div>
       ) : (
         <>
-          <p className="mb-2 text-xs font-medium text-gray-500">
+          <p className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
             {leads.length} lead{leads.length === 1 ? "" : "s"}
           </p>
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <table className="min-w-full">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50/60">
-                  <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                <tr className="border-b border-gray-200 bg-gray-50/60 dark:border-gray-800 dark:bg-gray-800/40">
+                  <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Lead
                   </th>
-                  <th className="hidden px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 md:table-cell">
+                  <th className="hidden px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 md:table-cell">
                     Campaign
                   </th>
-                  <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <th className="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">
                     Status
                   </th>
-                  <th className="hidden px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:table-cell">
+                  <th className="hidden px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400 sm:table-cell">
                     Created
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {leads.map((lead) => (
-                  <tr key={lead.id} className="relative hover:bg-gray-50/80">
+                  <tr key={lead.id} className="relative hover:bg-gray-50/80 dark:hover:bg-gray-800/40">
                     <td className="px-4 py-3">
                       <Link
                         href={`/leads/${lead.id}`}
@@ -160,23 +166,23 @@ export function LeadList() {
                       >
                         <Avatar name={lead.full_name} size="sm" />
                         <span className="min-w-0">
-                          <span className="block truncate text-sm font-medium text-gray-900">
+                          <span className="block truncate text-sm font-medium text-gray-900 dark:text-gray-100">
                             {lead.full_name}
                           </span>
-                          <span className="block truncate text-xs text-gray-500">
+                          <span className="block truncate text-xs text-gray-500 dark:text-gray-400">
                             {lead.email ?? lead.phone ?? "No contact info"}
                           </span>
                         </span>
                       </Link>
                     </td>
-                    <td className="hidden px-4 py-3 text-sm text-gray-600 md:table-cell">
+                    <td className="hidden px-4 py-3 text-sm text-gray-600 dark:text-gray-300 md:table-cell">
                       {lead.campaign_name ?? "—"}
                     </td>
                     <td className="px-4 py-3">
                       <StatusBadge status={lead.status} />
                     </td>
                     <td
-                      className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:table-cell"
+                      className="hidden whitespace-nowrap px-4 py-3 text-sm text-gray-500 dark:text-gray-400 sm:table-cell"
                       title={new Date(lead.created_at).toLocaleString()}
                     >
                       {relativeTime(lead.created_at)}
